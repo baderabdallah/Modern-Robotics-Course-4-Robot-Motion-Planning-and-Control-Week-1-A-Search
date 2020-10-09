@@ -60,4 +60,5 @@ closedNodeList = list()
 
 for i in nodeList:
     print(i.order, i.x, i.y, i.heuristicCostToGo)
-    
+    if i.childNode:
+        print(i.childNode)
