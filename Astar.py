@@ -33,5 +33,22 @@ for eachEdge in edges:
     m = edge(eachEdge[0], eachEdge[1], eachEdge[2])
     edgeList.append(m)
 
+
+initialPastCostList = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+
+heuristicCostToGoList = list()
+for node in nodeList:
+    heuristicCostToGoList.append(node.heuristicCostToGo)
+
+pastCostList = initialPastCostList
+estTotalCost = pastCostList + heuristicCostToGoList
+
+parentNodesList = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+openNodeList = list()
+
+closedNodeList = list()
+
 for i in nodeList:
     print(i.order, i.x, i.y, i.heuristicCostToGo)
+    
