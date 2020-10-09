@@ -8,6 +8,13 @@ class node:
         self.x = float(x)
         self.y = float(y)
         self.heuristicCostToGo = float(heuristicCostToGo)
+        self.childNode = list()
+        
+    def __repr__(self):
+        return 'Node({},{},{},{})'.format(self.order,
+                                         self.x,
+                                         self.y,
+                                         self.heuristicCostToGo)
 
 nodesFileName = os.getcwdb()
 nodesFileName = nodesFileName.decode("utf-8")+u'\\Scene5_example\\nodes.csv'
@@ -33,6 +40,8 @@ for eachEdge in edges:
     m = edge(eachEdge[0], eachEdge[1], eachEdge[2])
     edgeList.append(m)
 
+for eachEdge in edgeList:
+    nodeList[eachEdge.parentNodeId-1].childNode.append(nodeList[eachEdge.childNodeId-1])
 
 initialPastCostList = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 
