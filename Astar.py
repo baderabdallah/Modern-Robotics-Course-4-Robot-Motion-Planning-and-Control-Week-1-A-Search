@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import genfromtxt
 import os
+from operator import add
 
 class node:
     def __init__(self, order, x, y, heuristicCostToGo):
@@ -72,3 +73,14 @@ for i in nodeList:
     print(i.order, i.x, i.y, i.heuristicCostToGo)
     if i.childNode:
         print(i.childNode)
+count = 0
+for eachChild in openNodeList[0].openNode.childNode:
+    parentNodesList[eachChild.order - 1] = openNodeList[0].openNode.order
+    cost = openNodeList[0].openNode.childCost[count]
+    pastCostList[eachChild.order - 1] = cost  
+    estTotalCost = list (map(add, pastCostList, heuristicCostToGoList))
+    openNodeList.append(openListItem(eachChild,estTotalCost[eachChild.order-1]))
+    count = count + 1
+
+print(openNodeList)
+print(estTotalCost)
