@@ -9,6 +9,7 @@ class node:
         self.y = float(y)
         self.heuristicCostToGo = float(heuristicCostToGo)
         self.childNode = list()
+        self.childCost = list()
         
     def __repr__(self):
         return 'Node({},{},{},{})'.format(self.order,
@@ -49,6 +50,7 @@ for eachEdge in edges:
 
 for eachEdge in edgeList:
     nodeList[eachEdge.parentNodeId-1].childNode.append(nodeList[eachEdge.childNodeId-1])
+    nodeList[eachEdge.parentNodeId-1].childCost.append(eachEdge.cost)
 
 initialPastCostList = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 
