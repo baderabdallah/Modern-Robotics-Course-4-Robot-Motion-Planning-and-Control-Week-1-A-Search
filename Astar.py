@@ -57,15 +57,16 @@ initialPastCostList = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 heuristicCostToGoList = list()
 for node in nodeList:
     heuristicCostToGoList.append(node.heuristicCostToGo)
-
+estTotalCost = list()
 pastCostList = initialPastCostList
-estTotalCost = pastCostList + heuristicCostToGoList
+estTotalCost = list( map(add, pastCostList, heuristicCostToGoList) )
 
 parentNodesList = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
-
 openNodeList = list()
 
-closedNodeList = list()
+openNodeList.append(openListItem(nodeList[0],
+                    estTotalCost[0]))
+print(openNodeList[0].openNode,openNodeList[0].openNode.childNode )
 
 for i in nodeList:
     print(i.order, i.x, i.y, i.heuristicCostToGo)
