@@ -16,6 +16,13 @@ class node:
                                          self.y,
                                          self.heuristicCostToGo)
 
+class openListItem:
+    def __init__(self, openNode, nodeEstTotCost):
+        self.openNode = openNode
+        self.nodeEstTotCost = nodeEstTotCost
+    def __repr__(self):
+            return 'OpenNode({},{})'.format(self.openNode.order,
+                                            self.nodeEstTotCost)
 nodesFileName = os.getcwdb()
 nodesFileName = nodesFileName.decode("utf-8")+u'\\Scene5_example\\nodes.csv'
 nodes = genfromtxt(nodesFileName, delimiter=',')
