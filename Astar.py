@@ -42,9 +42,16 @@ for eachEdge in edgesData:
     m = edge(eachEdge[0], eachEdge[1], eachEdge[2])
     edgeList.append(m)
 
+## Append child nodes and their CostsToGo to their parent nodes.
 for eachEdge in edgeList:
-    nodeList[eachEdge.parentNodeId-1].childNode.append(nodeList[eachEdge.childNodeId-1])
-    nodeList[eachEdge.parentNodeId-1].childCost.append(eachEdge.cost)
+    #Child nodes
+    parentNode =  nodeList[eachEdge.parentNodeId-1]
+    childNode = nodeList[eachEdge.childNodeId-1]
+    parentNode.childNode.append(childNode)
+    #Child costs.
+    parentNode.childCost.append(eachEdge.cost)
+
+
 class openListItem:
     def __init__(self, openNode, nodeEstTotCost):
         self.openNode = openNode
