@@ -18,13 +18,6 @@ class node:
                                          self.y,
                                          self.heuristicCostToGo)
 
-class openListItem:
-    def __init__(self, openNode, nodeEstTotCost):
-        self.openNode = openNode
-        self.nodeEstTotCost = nodeEstTotCost
-    def __repr__(self):
-            return 'OpenNode({},{})'.format(self.openNode.order,
-                                            self.nodeEstTotCost)
 nodesFileName = os.getcwdb()
 nodesFileName = nodesFileName.decode("utf-8")+u'\\Scene5_example\\nodes.csv'
 nodesData = genfromtxt(nodesFileName, delimiter=',')
@@ -52,6 +45,13 @@ for eachEdge in edgesData:
 for eachEdge in edgeList:
     nodeList[eachEdge.parentNodeId-1].childNode.append(nodeList[eachEdge.childNodeId-1])
     nodeList[eachEdge.parentNodeId-1].childCost.append(eachEdge.cost)
+class openListItem:
+    def __init__(self, openNode, nodeEstTotCost):
+        self.openNode = openNode
+        self.nodeEstTotCost = nodeEstTotCost
+    def __repr__(self):
+            return 'OpenNode({},{})'.format(self.openNode.order,
+                                            self.nodeEstTotCost)
 
 initialPastCostList = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 
