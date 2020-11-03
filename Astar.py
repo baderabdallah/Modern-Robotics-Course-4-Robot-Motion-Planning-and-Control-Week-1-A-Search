@@ -60,6 +60,8 @@ class openListItem:
             return 'OpenNode({},{})'.format(self.openNode.order,
                                             self.nodeEstTotCost)
 
+closedNodeList = list()
+
 initialPastCostList = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 
 heuristicCostToGoList = list()
@@ -76,18 +78,20 @@ openNodeList.append(openListItem(nodeList[0],
                     estTotalCost[0]))
 print(openNodeList[0].openNode,openNodeList[0].openNode.childNode )
 
-for i in nodeList:
-    print(i.order, i.x, i.y, i.heuristicCostToGo)
-    if i.childNode:
-        print(i.childNode)
 count = 0
 for eachChild in openNodeList[0].openNode.childNode:
     parentNodesList[eachChild.order - 1] = openNodeList[0].openNode.order
     cost = openNodeList[0].openNode.childCost[count]
     pastCostList[eachChild.order - 1] = cost  
     estTotalCost = list (map(add, pastCostList, heuristicCostToGoList))
-    openNodeList.append(openListItem(eachChild,estTotalCost[eachChild.order-1]))
+    openNodeList.append(openListItem(eachChild, estTotalCost[eachChild.order-1]))
     count = count + 1
+
+
+for i in nodeList:
+    print(i.order, i.x, i.y, i.heuristicCostToGo)
+    if i.childNode:
+        print(i.childNode)
 
 print(openNodeList)
 print(estTotalCost)
