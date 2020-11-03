@@ -27,10 +27,10 @@ class openListItem:
                                             self.nodeEstTotCost)
 nodesFileName = os.getcwdb()
 nodesFileName = nodesFileName.decode("utf-8")+u'\\Scene5_example\\nodes.csv'
-nodes = genfromtxt(nodesFileName, delimiter=',')
+nodesData = genfromtxt(nodesFileName, delimiter=',')
 
 nodeList = list()
-for eachNode in nodes:
+for eachNode in nodesData:
     n = node(eachNode[0],eachNode[1],eachNode[2],eachNode[3])
     nodeList.append(n)
 
@@ -42,10 +42,10 @@ class edge:
 
 edgesFileName = os.getcwdb()
 edgesFileName = edgesFileName.decode("utf-8")+u'\\Scene5_example\\edges.csv'
-edges = genfromtxt(edgesFileName, delimiter=',')
+edgesData = genfromtxt(edgesFileName, delimiter=',')
 
 edgeList = list()
-for eachEdge in edges:
+for eachEdge in edgesData:
     m = edge(eachEdge[0], eachEdge[1], eachEdge[2])
     edgeList.append(m)
 
