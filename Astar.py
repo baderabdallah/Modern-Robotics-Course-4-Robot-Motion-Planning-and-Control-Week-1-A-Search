@@ -2,6 +2,8 @@ import numpy as np
 from numpy import genfromtxt
 import os
 from operator import add
+import csv
+from pathlib import Path
 
 class node:
     def __init__(self, order, x, y, heuristicCostToGo):
@@ -27,6 +29,7 @@ for eachNode in nodesData:
     n = node(eachNode[0],eachNode[1],eachNode[2],eachNode[3])
     nodeList.append(n)
 
+goalNode = nodeList[-1]
 class edge: 
     def __init__(self, childNodeId, parentNodeId, cost):
         self.childNodeId = int(childNodeId)
@@ -76,22 +79,40 @@ openNodeList = list()
 
 openNodeList.append(openListItem(nodeList[0],
                     estTotalCost[0]))
-print(openNodeList[0].openNode,openNodeList[0].openNode.childNode )
+#print(openNodeList[0].openNode,openNodeList[0].openNode.childNode )
 
-count = 0
-for eachChild in openNodeList[0].openNode.childNode:
-    parentNodesList[eachChild.order - 1] = openNodeList[0].openNode.order
-    cost = openNodeList[0].openNode.childCost[count]
-    pastCostList[eachChild.order - 1] = cost  
-    estTotalCost = list (map(add, pastCostList, heuristicCostToGoList))
-    openNodeList.append(openListItem(eachChild, estTotalCost[eachChild.order-1]))
-    count = count + 1
+while not(len(openNodeList) == 0):
+    count = 0
+    current = openNodeList[0]
+
+    closedNodeList.append(current)
+    if current.openNode.order == goalNode.order:
+        break
+    openNodeList.pop(0)
+    for eachChild in current.openNode.childNode:
+        parentNodesList[eachChild.order - 1] = current.openNode.order
+        cost = current.openNode.childCost[count]
+        pastCostList[eachChild.order - 1] = cost  
+        estTotalCost = list (map(add, pastCostList, heuristicCostToGoList))
+        if not any(x.openNode == eachChild for x in closedNodeList):
+            if any(x.openNode.order == eachChild.order for x in openNodeList):
+                popOut = next((x for x in openNodeList if x.openNode.order == eachChild.order), None)
+                openNodeList.pop(openNodeList.index(popOut))
+                openNodeList.append(openListItem(eachChild, estTotalCost[eachChild.order-1]))
+            else:
+                openNodeList.append(openListItem(eachChild, estTotalCost[eachChild.order-1]))
+
+        count = count + 1
+    openNodeList.sort(key=lambda x: x.nodeEstTotCost, reverse=False)
 
 
-for i in nodeList:
-    print(i.order, i.x, i.y, i.heuristicCostToGo)
-    if i.childNode:
-        print(i.childNode)
+path = list()
+for node in closedNodeList:
+    path.append(node.openNode.order)
+path_folder = os.path.abspath("Scene5_example/path.csv")
 
-print(openNodeList)
-print(estTotalCost)
+
+
+with open(path_folder, 'w', newline='') as fp:
+    wr = csv.writer(fp, dialect='excel')
+    wr.writerow(path)
