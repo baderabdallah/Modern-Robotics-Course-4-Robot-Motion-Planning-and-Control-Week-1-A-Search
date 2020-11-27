@@ -1,118 +1,90 @@
 import numpy as np
-from numpy import genfromtxt
 import os
 from operator import add
-import csv
 from pathlib import Path
-
-class node:
-    def __init__(self, order, x, y, heuristicCostToGo):
-        self.order = int(order)
-        self.x = float(x)
-        self.y = float(y)
-        self.heuristicCostToGo = float(heuristicCostToGo)
-        self.childNode = list()
-        self.childCost = list()
-        
-    def __repr__(self):
-        return 'Node({},{},{},{})'.format(self.order,
-                                         self.x,
-                                         self.y,
-                                         self.heuristicCostToGo)
-
-nodesFileName = os.getcwdb()
-nodesFileName = nodesFileName.decode("utf-8")+u'\\Scene5_example\\nodes.csv'
-nodesData = genfromtxt(nodesFileName, delimiter=',')
-
-nodeList = list()
-for eachNode in nodesData:
-    n = node(eachNode[0],eachNode[1],eachNode[2],eachNode[3])
-    nodeList.append(n)
-
-goalNode = nodeList[-1]
-class edge: 
-    def __init__(self, childNodeId, parentNodeId, cost):
-        self.childNodeId = int(childNodeId)
-        self.parentNodeId = int(parentNodeId)
-        self.cost = float(cost)
-
-edgesFileName = os.getcwdb()
-edgesFileName = edgesFileName.decode("utf-8")+u'\\Scene5_example\\edges.csv'
-edgesData = genfromtxt(edgesFileName, delimiter=',')
-
-edgeList = list()
-for eachEdge in edgesData:
-    m = edge(eachEdge[0], eachEdge[1], eachEdge[2])
-    edgeList.append(m)
-
-## Append child nodes and their CostsToGo to their parent nodes.
-for eachEdge in edgeList:
-    #Child nodes
-    parentNode =  nodeList[eachEdge.parentNodeId-1]
-    childNode = nodeList[eachEdge.childNodeId-1]
-    parentNode.childNode.append(childNode)
-    #Child costs.
-    parentNode.childCost.append(eachEdge.cost)
+from node import Node 
+from edge import Edge
+from openListItem import OpenListItem
 
 
-class openListItem:
-    def __init__(self, openNode, nodeEstTotCost):
-        self.openNode = openNode
-        self.nodeEstTotCost = nodeEstTotCost
-    def __repr__(self):
-            return 'OpenNode({},{})'.format(self.openNode.order,
-                                            self.nodeEstTotCost)
+if __name__ == "__main__":
+    #Lists decleration
+    nodeList = list()
+    edgeList = list()
 
-closedNodeList = list()
+    #openNodeList is updated throught the A* algorithm
+    openNodeList = list()
+    #closedNodeList is the final soltuion of the A* algorithm
+    closedNodeList = list()
 
-initialPastCostList = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+    #Usually when the algorithm is done by hand those four lists are the four rows
+    pastCostList = list()
+    parentNodesList = list()
+    heuristicCostToGoList = list()
+    estTotalCost = list()
 
-heuristicCostToGoList = list()
-for node in nodeList:
-    heuristicCostToGoList.append(node.heuristicCostToGo)
-estTotalCost = list()
-pastCostList = initialPastCostList
-estTotalCost = list( map(add, pastCostList, heuristicCostToGoList) )
+    #Parsing information about the nodes
+    nodesFileName = os.getcwdb()
+    nodesFileName = nodesFileName.decode("utf-8")+u'\\Scene5_example\\nodes.csv'
+    nodeList = Node.parse_nodes_data(nodesFileName)
 
-parentNodesList = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
-openNodeList = list()
+    #initializing the goal node as the last node from the nodeList
+    goalNode = nodeList[-1]
 
-openNodeList.append(openListItem(nodeList[0],
-                    estTotalCost[0]))
-#print(openNodeList[0].openNode,openNodeList[0].openNode.childNode )
+    #Parsing information about the edges
+    edgesFileName = os.getcwdb()
+    edgesFileName = edgesFileName.decode("utf-8")+u'\\Scene5_example\\edges.csv'
+    edgeList = Edge.parse_edge_data(edgesFileName)
 
-while not(len(openNodeList) == 0):
-    count = 0
-    current = openNodeList[0]
+    #Definition of the lists that are the attributes of the algorithm i.e. final path = f(parentNodeList, pastCostList, heuCostList, estTotalCost)
+    parentNodesList = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+    pastCostList = [0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+    for node in nodeList:
+        heuristicCostToGoList.append(node.heuristicCostToGo)
+    estTotalCost = list( map(add, pastCostList, heuristicCostToGoList) )
 
-    closedNodeList.append(current)
-    if current.openNode.order == goalNode.order:
-        break
-    openNodeList.pop(0)
-    for eachChild in current.openNode.childNode:
-        parentNodesList[eachChild.order - 1] = current.openNode.order
-        cost = current.openNode.childCost[count]
-        pastCostList[eachChild.order - 1] = cost  
-        estTotalCost = list (map(add, pastCostList, heuristicCostToGoList))
-        if not any(x.openNode == eachChild for x in closedNodeList):
-            if any(x.openNode.order == eachChild.order for x in openNodeList):
-                popOut = next((x for x in openNodeList if x.openNode.order == eachChild.order), None)
-                openNodeList.pop(openNodeList.index(popOut))
-                openNodeList.append(openListItem(eachChild, estTotalCost[eachChild.order-1]))
-            else:
-                openNodeList.append(openListItem(eachChild, estTotalCost[eachChild.order-1]))
+    #Extracting children information for each parent from edgeList, and connecting the children to their parents in nodeList
+    Node.add_children_nodes_to_nodeList(nodeList, edgeList)
 
-        count = count + 1
-    openNodeList.sort(key=lambda x: x.nodeEstTotCost, reverse=False)
+    #A* algorithm starts following the psudo code from the course
+    
+    #First node is appended
+    openNodeList.append(OpenListItem(nodeList[0],
+                        estTotalCost[0]))
+    
+    #Go on if open list is not empty!
+    while not(len(openNodeList) == 0):
+        count = 0
+        current = openNodeList[0]
 
+        #add first node in the open list to the closed list
+        closedNodeList.append(current)
 
-path = list()
-for node in closedNodeList:
-    path.append(node.openNode.order)
-path_folder = os.path.abspath("Scene5_example/path.csv")
+        #Break out of loop if goal is reached!
+        if current.openNode.order == goalNode.order:
+            break
 
+        #first node was added to closed list. it is not need now in the open list.
+        openNodeList.pop(0)
 
+        #follow the algorithm and produce the open list sorted in increasing order of total estimated cost.
+        for eachChild in current.openNode.childNode:
+            parentNodesList[eachChild.order - 1] = current.openNode.order
+            cost = current.openNode.childCost[count]
+            pastCostList[eachChild.order - 1] = cost  
+            estTotalCost = list (map(add, pastCostList, heuristicCostToGoList))
+            if not any(x.openNode == eachChild for x in closedNodeList):
+                if any(x.openNode.order == eachChild.order for x in openNodeList):
+                    popOut = next((x for x in openNodeList if x.openNode.order == eachChild.order), None)
+                    openNodeList.pop(openNodeList.index(popOut))
+                    openNodeList.append(OpenListItem(eachChild, estTotalCost[eachChild.order-1]))
+                else:
+                    openNodeList.append(OpenListItem(eachChild, estTotalCost[eachChild.order-1]))
 
-with open(path_folder, 'w', newline='') as fp:
-    wr = csv.writer(fp, dialect='excel')
-    wr.writerow(path)
+            count = count + 1
+        openNodeList.sort(key=lambda x: x.nodeEstTotCost, reverse=False)
+        #Go back to the start of the loop to add the first element of the open list into the closed list
+
+    #Algorithm is done! Now write the solution path into disk
+    closedNodeListFileName = "Scene5_example/path.csv"
+    Node.write_closed_node_list(closedNodeListFileName, closedNodeList)
