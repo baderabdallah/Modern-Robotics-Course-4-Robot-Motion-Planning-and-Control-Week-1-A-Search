@@ -1,10 +1,13 @@
 from numpy import genfromtxt
 import os
-class Edge: 
+
+
+class Edge:
     def __init__(self, childNodeId, parentNodeId, cost):
         self.childNodeId = int(childNodeId)
         self.parentNodeId = int(parentNodeId)
         self.cost = float(cost)
+
     @staticmethod
     def parse_edge_data(edgesFileName):
         edgeList = list()
